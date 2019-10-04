@@ -1,10 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {IProduct} from './product';
+import {ProductService} from './product.service';
+import {error} from 'util';
 
 @Component({
-  selector: 'pm-products',
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.css']
+  styleUrls: ['./product-list.component.css'],
+  /*providers: [ProductService]*/
 })
 export class ProductListComponent implements OnInit {
   pageTitle: string = 'Kristina\'s Product List :)';
@@ -12,6 +14,7 @@ export class ProductListComponent implements OnInit {
   imageMargin: number =2;
   showImage: boolean = false;
   message: string;
+  errorMessage: string;
   _listFilter: string;
   get listFilter(): string{
     return this._listFilter;
@@ -21,7 +24,9 @@ export class ProductListComponent implements OnInit {
     this.filteredProducts = this.listFilter ? this.preformFilter(this.listFilter): this.products;
   }
   filteredProducts: IProduct[];
-  products: any[] = [
+  products: IProduct[] = [];
+
+/*  products: any[] = [
     {
       productId: 1,
       productName: 'Leaf Rake',
@@ -72,11 +77,9 @@ export class ProductListComponent implements OnInit {
       starRating: 4.6,
       imageUrl: 'assets/images/xbox-controller.png'
     }
-  ];
+  ];*/
 
-  constructor(){
-    this.filteredProducts = this.products;
-    this.listFilter = 'cart';
+  constructor(private productService: ProductService) {
   }
 
   toggleImage(): void {
@@ -84,11 +87,16 @@ export class ProductListComponent implements OnInit {
   }
 
   onRatingClicked(message: string): void {
-    this.message = message;
+    this.pageTitle = 'Product List: ' + message;
   }
 
   ngOnInit(): void {
-    console.log('In OnInit');
+    this.productService.getProducts().subscribe({
+      next: products => {this.products = products
+                         this.filteredProducts = this.products;
+      },
+      error: err => this.errorMessage = this.errorMessage = err
+    });
   }
 
   private preformFilter(listFilter: string): IProduct[] {

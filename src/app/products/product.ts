@@ -1,5 +1,5 @@
 export interface IProduct {
-  productId: string;
+  productId: number;
   productName: string;
   productCode: string;
   releaseDate: string;
@@ -11,7 +11,7 @@ export interface IProduct {
 
 export class Product implements IProduct {
 
-  constructor(public productId: string,
+  constructor(public productId: number,
               public productName: string,
               public productCode: string,
               public releaseDate: string,
